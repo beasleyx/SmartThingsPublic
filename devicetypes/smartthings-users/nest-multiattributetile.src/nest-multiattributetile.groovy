@@ -105,7 +105,7 @@ metadata {
 	tiles {
 
 		tiles(scale: 2) {
-		multiAttributeTile(name:"thermostatMulti", type:"thermostat", width:6, height:4) {
+		multiAttributeTile(name:"thermostatMulti", type:"generic", width:6, height:4) {
   			tileAttribute("device.temperature", key: "PRIMARY_CONTROL") {
     		attributeState("default", label:'${currentValue}', unit:"dF")
   			}
@@ -114,31 +114,23 @@ metadata {
 //  		attributeState("default", action:"polling.poll")
 //  		}
   			
-            tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
-    		attributeState("default", label:'${currentValue}%', unit:"%")
-  			}
+//            tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
+//    		attributeState("default", label:'${currentValue}%', unit:"%")
+//  			}
   			
             tileAttribute("device.thermostatOperatingState", key: "OPERATING_STATE") {
-    		attributeState("idle",    backgroundColor:"#646464")
-    		attributeState("heating", backgroundColor:"#bc2323")
-    		attributeState("cooling", backgroundColor:"#1e9cbb")
+    		attributeState("idle", action:"polling.poll", backgroundColor:"#646464")
+    		attributeState("heating", action:"polling.poll", backgroundColor:"#bc2323")
+    		attributeState("cooling", action:"polling.poll", backgroundColor:"#1e9cbb")
   			}
   			
             tileAttribute("device.thermostatMode", key: "THERMOSTAT_MODE") {
-    		attributeState("off", label:'${name}')
-    		attributeState("heat", label:'${name}')
-    		attributeState("cool", label:'${name}')
-    		attributeState("auto", label:'${name}')
+    		attributeState("off", action:"polling.poll", label:'${name}')
+    		attributeState("heat", action:"polling.poll", label:'${name}')
+    		attributeState("cool", action:"polling.poll", label:'${name}')
+    		attributeState("auto", action:"polling.poll", label:'${name}')
   			}
-/*  			
-  			tileAttribute("device.heatingSetpoint", key: "HEATING_SETPOINT") {
-    		attributeState("default", label:'${currentValue}', unit:"dF")
-  			}
-            
-            tileAttribute("device.coolingSetpoint", key: "COOLING_SETPOINT") {
-    		attributeState("default", label:'${currentValue}', unit:"dF")
-            }
-*/            
+    
 		}
         main "thermostatMulti"
   		details "thermostatMulti"
@@ -151,7 +143,11 @@ metadata {
 			state("cool", action:"thermostat.heat", icon: "st.thermostat.cool")
 			state("heat", action:"thermostat.auto", icon: "st.thermostat.heat")
 		}
-
+        
+       standardTile("humidity", "device.humidity", inactiveLabel: false, width:2, height:1) {
+       		state("default", label:'RH:${currentValue}%', unit:"%", icon: "st.Home.home2")
+            }
+            
 		standardTile("thermostatFanMode", "device.thermostatFanMode", inactiveLabel: true, decoration: "flat", width:2, height:1) {
 			state "auto", action:"thermostat.fanOn", icon: "st.thermostat.fan-auto"
 			state "on", action:"thermostat.fanCirculate", icon: "st.thermostat.fan-on"
@@ -167,39 +163,28 @@ metadata {
 		}
 
 		standardTile("presence", "device.presence", inactiveLabel: false, decoration: "flat", width:2, height:1) {
-			state "present", label:'${name}', action:"away", icon: "st.Home.home2"
-			state "not present", label:'away', action:"present", icon: "st.Transportation.transportation5"
+			state "present", action:"away", icon: "st.Home.home2"
+			state "not present", action:"present", icon: "st.Transportation.transportation5"
 		}
 
-		standardTile("refresh", "device.thermostatMode", inactiveLabel: false, decoration: "flat", width:2, height:1) {
+		standardTile("refresh", "device.thermostatMode", inactiveLabel: true, decoration: "flat", width:2, height:1) {
 			state "default", action:"polling.poll", icon:"st.secondary.refresh"
 		}
 
-		controlTile("heatSliderControl", "device.heatingSetpoint", "slider", height: 1, width: 1, inactiveLabel: false) {
-			state "setHeatingSetpoint", label:'Set temperature to', action:"thermostat.setHeatingSetpoint"
-		}
-		controlTile("coolSliderControl", "device.coolingSetpoint", "slider", height: 1, width: 2, inactiveLabel: false) {
-			state "setCoolingSetpoint", label:'Set temperature to', action:"thermostat.setCoolingSetpoint"
-		}
-
-		//controlTile("humiditySliderControl", "humiditySetpoint", "slider", height: 1, width: 2, inactiveLabel: false) {
-		//	state "setHumiditySetpoint", label:'Set humidity to', action:"thermostat.setHumiditySetpoint"
-		//}
-
 		standardTile("heatingSetpointUp", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false, decoration: "flat", width:2, height:1) {
-			state "heatingSetpointUp", label:'  ', action:"heatingSetpointUp", icon:"st.thermostat.thermostat-up", backgroundColor:"#bc2323"
+			state "heatingSetpointUp", label:'Heat', action:"heatingSetpointUp", icon:"st.thermostat.thermostat-up"
 		}
 
 		standardTile("heatingSetpointDown", "device.heatingSetpoint", canChangeIcon: false, inactiveLabel: false, decoration: "flat", width:2, height:1) {
-			state "heatingSetpointDown", label:'  ', action:"heatingSetpointDown", icon:"st.thermostat.thermostat-down", backgroundColor:"#bc2323"
+			state "heatingSetpointDown", label:'Heat', action:"heatingSetpointDown", icon:"st.thermostat.thermostat-down"
 		}
 
 		standardTile("coolingSetpointUp", "device.coolingSetpoint", canChangeIcon: false, inactiveLabel: false, decoration: "flat", width:2, height:1) {
-			state "coolingSetpointUp", label:'  ', action:"coolingSetpointUp", icon:"st.thermostat.thermostat-up", backgroundColor:"#1e9cbb"
+			state "coolingSetpointUp", label:'Cool', action:"coolingSetpointUp", icon:"st.thermostat.thermostat-up"
 		}
 
 		standardTile("coolingSetpointDown", "device.coolingSetpoint", canChangeIcon: false, inactiveLabel: false, decoration: "flat", width:2, height:1) {
-			state "coolingSetpointDown", label:'  ', action:"coolingSetpointDown", icon:"st.thermostat.thermostat-down", backgroundColor:"#1e9cbb"
+			state "coolingSetpointDown", label:'Cool', action:"coolingSetpointDown", icon:"st.thermostat.thermostat-down"
 		}
 		
 		//standardTile("humiditySetpointUp", "humiditySetpoint", canChangeIcon: false, inactiveLabel: false, decoration: "flat") {
@@ -220,7 +205,7 @@ metadata {
 		//details(["temperature", "thermostatOperatingState", "humidity", "thermostatMode", "thermostatFanMode", "presence", "heatingSetpoint", "heatSliderControl", "coolingSetpoint", "coolSliderControl", "humiditySetpoint", "humiditySliderControl", "temperatureUnit", "refresh"])
 		//details(["temperature", "thermostatOperatingState", "humidity", "thermostatMode", "thermostatFanMode", "presence", "heatingSetpointUp", "coolingSetpointUp", "heatingSetpoint", "coolingSetpoint", "heatingSetpointDown",  "coolingSetpointDown", "humiditySetpointDown", "humiditySetpoint", "humiditySetpointUp", "temperatureUnit","refresh"])
         details([	"temperature", "thermostatOperatingState", 
-        			"heatingSetpointUp", "coolingSetpointUp", "presence",
+        			"heatingSetpointUp", "coolingSetpointUp", "humidity",
                     "heatingSetpoint", "coolingSetpoint", "thermostatMode", "thermostatFanMode",
                     "heatingSetpointDown", "coolingSetpointDown", "refresh"])
 
@@ -464,6 +449,7 @@ def present() {
 def setPresence(status) {
 	log.debug "Status: $status"
 	api('presence', ['away': status == 'away', 'away_timestamp': new Date().getTime(), 'away_setter': 0]) {
+ 
 		poll()
 	}
 }
