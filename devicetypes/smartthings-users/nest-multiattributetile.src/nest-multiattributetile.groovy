@@ -105,7 +105,7 @@ metadata {
 	tiles {
 
 		tiles(scale: 2) {
-		multiAttributeTile(name:"thermostatMulti", type:"generic", width:6, height:4) {
+		multiAttributeTile(name:"thermostatMulti", type:"thermostat", width:6, height:4) {
   			tileAttribute("device.temperature", key: "PRIMARY_CONTROL") {
     		attributeState("default", label:'${currentValue}', unit:"dF")
   			}
@@ -114,9 +114,9 @@ metadata {
 //  		attributeState("default", action:"polling.poll")
 //  		}
   			
-//            tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
-//    		attributeState("default", label:'${currentValue}%', unit:"%")
-//  			}
+            tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
+    		attributeState("default", label:'${currentValue}%', unit:"%")
+  			}
   			
             tileAttribute("device.thermostatOperatingState", key: "OPERATING_STATE") {
     		attributeState("idle", action:"polling.poll", backgroundColor:"#646464")
@@ -162,9 +162,9 @@ metadata {
 			state "default", label:'${currentValue}°', unit:"Cool", backgroundColor:"#1e9cbb"
 		}
 
-		standardTile("presence", "device.presence", inactiveLabel: false, decoration: "flat", width:2, height:1) {
-			state "present", action:"away", icon: "st.Home.home2"
-			state "not present", action:"present", icon: "st.Transportation.transportation5"
+		standardTile("setPresence", "device.presence", inactiveLabel: false, decoration: "flat", width:2, height:1) {
+			state "present", label: "Home", action:"away", icon: "st.Home.home2"
+			state "not present", label: "Away", action:"present", icon: "st.Transportation.transportation5"
 		}
 
 		standardTile("refresh", "device.thermostatMode", inactiveLabel: true, decoration: "flat", width:2, height:1) {
@@ -205,7 +205,7 @@ metadata {
 		//details(["temperature", "thermostatOperatingState", "humidity", "thermostatMode", "thermostatFanMode", "presence", "heatingSetpoint", "heatSliderControl", "coolingSetpoint", "coolSliderControl", "humiditySetpoint", "humiditySliderControl", "temperatureUnit", "refresh"])
 		//details(["temperature", "thermostatOperatingState", "humidity", "thermostatMode", "thermostatFanMode", "presence", "heatingSetpointUp", "coolingSetpointUp", "heatingSetpoint", "coolingSetpoint", "heatingSetpointDown",  "coolingSetpointDown", "humiditySetpointDown", "humiditySetpoint", "humiditySetpointUp", "temperatureUnit","refresh"])
         details([	"temperature", "thermostatOperatingState", 
-        			"heatingSetpointUp", "coolingSetpointUp", "humidity",
+        			"heatingSetpointUp", "coolingSetpointUp", "setPresence",
                     "heatingSetpoint", "coolingSetpoint", "thermostatMode", "thermostatFanMode",
                     "heatingSetpointDown", "coolingSetpointDown", "refresh"])
 
