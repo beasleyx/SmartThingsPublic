@@ -110,9 +110,11 @@ metadata {
     		attributeState("default", label:'${currentValue}', unit:"dF")
   			}
   			
-//          tileAttribute("device.temperature", key: "VALUE_CONTROL") {
-//  		attributeState("default", action:"polling.poll")
-//  		}
+	        tileAttribute("device.temperature", key: "VALUE_CONTROL") {
+  			attributeState("default", action:"polling.poll")
+//          attributeState("VALUE_UP", action: "temperatureUp")
+//    		attributeState("VALUE_DOWN", action: "temperatureDown")
+  			}
   			
             tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
     		attributeState("default", label:'${currentValue}%', unit:"%")
