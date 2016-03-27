@@ -100,16 +100,19 @@ metadata {
 		// TODO: define status and reply messages here
 	}
 
-	tiles {
-        
+	tiles
+    	{
+        		       
 		tiles(scale: 2) {
 		multiAttributeTile(name:"thermostatMulti", type:"thermostat", width:6, height:4, canChangeIcon: true) {
-  			tileAttribute("device.temperature", key: "PRIMARY_CONTROL") {
+  			
+                        
+            tileAttribute("device.temperature", key: "PRIMARY_CONTROL") {
     		attributeState("default", label:'${currentValue}', unit:"dF")
   			}
   			
 	        tileAttribute("device.temperature", key: "VALUE_CONTROL") {
-  			attributeState("VALUE_UP", action:"heatingSetpointUp")
+  			attributeState("VALUE_UP",  action:"heatingSetpointUp")
     		attributeState("VALUE_DOWN", action:"coolingSetpointDown")
   			}
   			
@@ -160,27 +163,35 @@ metadata {
 
 		standardTile("setPresence", "device.presence", inactiveLabel: false, width:2, height:2) {
 			state "present", label: "Home", action:"away", icon: "st.Home.home2", backgroundColor: "#4caf50"
-			state "not present", label: "Away", action:"polling.poll", icon: "st.Transportation.transportation5", backgroundColor: "#616161"
+			state "not present", label: "Away", action:"present", icon: "st.Transportation.transportation5", backgroundColor: "#616161"
 		}
 
 		standardTile("refresh", "device.thermostatMode", inactiveLabel: true, decoration: "flat", width:2, height:2) {
 			state "default", action:"polling.poll", icon:"st.secondary.refresh"
 		}
-
-
-		//standardTile("humiditySetpointUp", "humiditySetpoint", canChangeIcon: false, inactiveLabel: false, decoration: "flat") {
-		//	state "humiditySetpointUp", label:'  ', action:"humiditySetpointUp", icon:"st.thermostat.thermostat-up", backgroundColor:"#1e9cbb"
-		//}
-
-		//standardTile("humiditySetpointDown", "device.humiditySetpoint", canChangeIcon: false, inactiveLabel: false, decoration: "flat") {
-		//	state "humiditySetpointDown", label:'  ', action:"humiditySetpointDown", icon:"st.thermostat.thermostat-down", backgroundColor:"#1e9cbb"
-		//}
+		
+        valueTile("airFilter", "device.airFilter", width: 2, height: 2, decoration: "flat", wordWrap: true) {
+			state "default", label: '${currentValue}'
+		}
+		standardTile("leafValue", "device.leafValue", width: 1, height: 1) {
+			state("on", icon: "https://dl.dropboxusercontent.com/s/srdilt1iimtihfk/nest_leaf.png")
+			state("off", icon: "https://dl.dropboxusercontent.com/s/r8od1fqp7sffrf0/nest_leaf_dark.png")
+		}
+		valueTile("rssiTile", "device.rssiTile", width: 1, height: 1, decoration: "flat") {
+			state "one", label: 'WiFi', icon: "https://dl.dropboxusercontent.com/s/k1hwtntuy7w2nar/signal_wifi_statusbar1.png"
+			state "two", label: 'WiFi', icon: "https://dl.dropboxusercontent.com/s/li57n9knv44s6lz/signal_wifi_statusbar2.png"
+			state "three", label: 'WiFi', icon: "https://dl.dropboxusercontent.com/s/ceecz74b7jzgeoj/signal_wifi_statusbar3.png"
+			state "four", label: 'WiFi', icon: "https://dl.dropboxusercontent.com/s/oa14yhjkelpbx7p/signal_wifi_statusbar4.png"
+			state "five", label: 'WiFi', icon: "https://dl.dropboxusercontent.com/s/6kuf1c25niuhxsj/signal_wifi_statusbar5.png"
+			state "none", label: 'WiFi', icon: "https://dl.dropboxusercontent.com/s/6oavdtrfxy1b706/signal_wifi_statusbar_null.png"
+				
+		}
 
 		main(["temperature", "thermostatOperatingState", "humidity"])
 
         details([	"temperature", "thermostatOperatingState", 
         			"heatingSetpoint", "setPresence", "coolingSetpoint",
-                   	"thermostatMode", "thermostatFanMode", "refresh"])
+                   	"thermostatMode", "airFilter", "refresh"])
                     
 /*      details([	"temperature", "thermostatOperatingState", 
         			"heatingSetpointUp", "coolingSetpointUp", "setPresence",
@@ -207,6 +218,27 @@ def parse(String description) {
 }
 
 // handle commands
+
+def setFirmwareVer(value) {
+	def firmVer = data?.device?.current_version ?: "unknown"
+	sendEvent(name: 'firmwareVer', value: firmVer)	
+}
+
+def setFilterStatus(hasFilter,filterReminder,filterStatus) {
+	def value
+	def filterVal = (filterStatus) ? "Ok" : "Replace"
+	if (hasFilter) { value = "Installed (${filterVal})" }
+	else { value = "Not Installed" }
+	//log.info "Air Filter: ${value}"
+	sendEvent(name: 'airFilter', value: "Filter:\n" + value)
+}
+
+def setLeafStatus(leaf) {
+	def val = leaf.toBoolean() ? "on" : "off"
+	//log.info "Nest Leaf: ${val}" 
+	sendEvent(name: 'leafValue', value: '${val}' )
+}
+
 def setHeatingSetpoint(temp) {
 	def latestThermostatMode = device.latestState('thermostatMode')
 	def temperatureUnit = device.latestValue('temperatureUnit')
