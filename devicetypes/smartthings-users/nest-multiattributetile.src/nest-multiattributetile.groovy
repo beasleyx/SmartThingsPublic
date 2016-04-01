@@ -116,14 +116,17 @@ metadata {
     		attributeState("VALUE_DOWN", action:"coolingSetpointDown")
   			}
   			
-            tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
-    		attributeState("default", label:'${currentValue}%', unit:"%")
-  			}
-  			
+			tileAttribute("device.humidity", key: "SECONDARY_CONTROL") {
+			attributeState("default", label:'${currentValue}%')
+			}
+            
+            
             tileAttribute("device.thermostatOperatingState", key: "OPERATING_STATE") {
     		attributeState("idle", label: '${name}', backgroundColor:"#616161", icon: "st.thermostat.heating-cooling-off")
-    		attributeState("heating", label: '${name}', backgroundColor:"#f44336", icon: "st.thermostat.heat")
+    		attributeState("heating", label: '${name} ${heatingSetPoint}', backgroundColor:"#f44336", icon: "st.thermostat.heat")
     		attributeState("cooling", label: '${name}', backgroundColor:"#2196f3", icon: "st.thermostat.cool")
+            
+            
   			}
             
   			
