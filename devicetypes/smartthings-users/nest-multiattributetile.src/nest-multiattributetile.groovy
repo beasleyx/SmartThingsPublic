@@ -122,9 +122,9 @@ metadata {
             
             
             tileAttribute("device.thermostatOperatingState", key: "OPERATING_STATE") {
-    		attributeState("idle", label: '${name}', backgroundColor:"#616161", icon: "st.thermostat.heating-cooling-off")
-    		attributeState("heating", label: '${name} ${heatingSetPoint}', backgroundColor:"#f44336", icon: "st.thermostat.heat")
-    		attributeState("cooling", label: '${name}', backgroundColor:"#2196f3", icon: "st.thermostat.cool")
+    		attributeState("idle", label: '${name} temp in Range ${heatingSetPoint} to ${coolingSetPoint}', backgroundColor:"#616161", icon: "st.thermostat.heating-cooling-off")
+    		attributeState("heating", label: '${name} to ${heatingSetPoint}', backgroundColor:"#f44336", icon: "st.thermostat.heat")
+    		attributeState("cooling", label: '${name} to ${coolingSetPoint}', backgroundColor:"#2196f3", icon: "st.thermostat.cool")
             
             
   			}
@@ -144,10 +144,10 @@ metadata {
 // End of MultiAttribute Tile
 
       standardTile("thermostatMode", "device.thermostatMode", inactiveLabel: false, decoration: "flat", width:2, height:2) {
-			state("auto", action:"polling.poll", icon: "st.thermostat.auto")
-			state("off", action:"polling.poll", icon: "st.thermostat.heating-cooling-off")
-			state("cool", action:"polling.poll", icon: "st.thermostat.cool")
-			state("heat", action:"polling.poll", icon: "st.thermostat.heat")
+			state("auto", action:"auto", icon: "st.thermostat.auto")
+			state("off", action:"off", icon: "st.thermostat.heating-cooling-off")
+//			state("cool", action:"polling.poll", icon: "st.thermostat.cool")
+//			state("heat", action:"polling.poll", icon: "st.thermostat.heat")
 		}
         
       standardTile("thermostatFanMode", "device.thermostatFanMode", inactiveLabel: true, decoration: "flat", width:2, height:2) {
@@ -157,11 +157,11 @@ metadata {
 		}
 
 		valueTile("heatingSetpoint", "device.heatingSetpoint", width:2, height:2) {
-			state "default", label:'${currentValue}°', unit:"Heat", backgroundColor:"#f44336", action:"polling.poll"
+			state "default", label:'${currentValue}°', unit:"Heat", backgroundColor:"#f44336", action:"heatingSetpointUp"
 		}
         
         valueTile("coolingSetpoint", "device.coolingSetpoint", width:2, height:2) {
-			state "default", label:'${currentValue}°', unit:"Cool", backgroundColor:"#2196f3", action:"polling.poll"
+			state "default", label:'${currentValue}°', unit:"Cool", backgroundColor:"#2196f3", action:"coolingSetpointDown"
 		}
 
 		standardTile("setPresence", "device.presence", inactiveLabel: false, width:2, height:2) {
@@ -293,9 +293,9 @@ def setHeatingSetpoint(temp) {
 def coolingSetpointDown(){
 	int newSetpoint = device.currentValue("coolingSetpoint") - 1
 	log.debug "Setting cool set point down to: ${newSetpoint}"
-	setCoolingSetpoint(newSetpoint)
-    setHeatingSetpoint(newSetpoint -5)
-}
+	   	setCoolingSetpoint(newSetpoint)
+    	setHeatingSetpoint(newSetpoint -5)
+	}
 
 def setCoolingSetpoint(temp) {
 	def latestThermostatMode = device.latestState('thermostatMode')
@@ -347,9 +347,10 @@ def setCoolingSetpoint(temp) {
 def heatingSetpointUp(){
 	int newSetpoint = device.currentValue("heatingSetpoint") + 1
 	log.debug "Setting heat set point up to: ${newSetpoint}"
-	setHeatingSetpoint(newSetpoint)
-    setCoolingSetpoint(newSetpoint + 5)
-}
+    	setHeatingSetpoint(newSetpoint)
+    	setCoolingSetpoint(newSetpoint + 5)
+    
+	}
 
 def setFahrenheit() {
 	def temperatureUnit = "fahrenheit"
